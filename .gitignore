@@ -51,6 +51,15 @@ vite.svg
 !.env.example
 !.env.*.example
 
+# Logs
+*.log
+
+# Databases / local app data
+*.db
+*.sqlite
+*.sqlite3
+instance/
+
 # Editor / OS files
 .idea/
 .vscode/
@@ -58,4 +67,3 @@ vite.svg
 *.swo
 .DS_Store
 Thumbs.db
-
