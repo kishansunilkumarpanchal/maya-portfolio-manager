@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="dashboard-grid">
+    <!-- Left Column: Balances -->
+    <div class="section-container">
+        <div class="section-header">BALANCES</div>
+
+        <div style="display: flex; border-bottom: 2px solid #c39b52; margin-bottom: 10px;">
+            <div style="flex: 1; font-weight: 600; padding: 5px;">CHARGES DUE</div>
+            <div style="flex: 1; text-align: right; color: #666; padding: 5px;">CREDITS</div>
+        </div>
+
+        <table class="data-table">
+            <tbody>
+                <tr>
+                    <td>TYPE</td>
+                    <td class="amount">AMOUNT</td>
+                </tr>
+                <tr>
+                    <td>Loans</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Interest</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Loan Fees</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Customer Fees</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Customer Taxes</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr class="data-row-bold" style="border-top: 2px solid #000;">
+                    <td>Total</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 20px;">Portfolio Value (Net Cap Cost)</td>
+                    <td class="amount" style="padding-top: 20px;">{{ "{:,.2f}".format(total_value) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Right Column: Activity -->
+    <div class="section-container">
+        <div class="section-header">TODAY'S ACTIVITY</div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>TYPE</th>
+                    <th class="amount">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Approved New Loans</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Disbursements</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="height: 20px;"></td>
+                </tr>
+                <tr>
+                    <td>Payments</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Last Payment Date - Principal</td>
+                    <td class="amount">12/01/2025</td>
+                </tr>
+                <tr>
+                    <td>Last Payment Date - Interest and Fees</td>
+                    <td class="amount">12/01/2025</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="height: 20px;"></td>
+                </tr>
+                <tr>
+                    <td>Approved Loan Requests</td>
+                    <td class="amount">0.00</td>
+                </tr>
+                <tr>
+                    <td>Open Loan Requests</td>
+                    <td class="amount">0.00</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="section-container">
+    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Portfolio Snapshot</h2>
+        <div class="actions">
+            <a href="{{ url_for('create_lease') }}" class="btn"
+                style="background: var(--accent); color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: 500;">
+                New Lease
+            </a>
+        </div>
+    </div>
+    <div
+        style="text-align: right; font-size: 11px; color: #c39b52; font-weight: 600; text-transform: uppercase; cursor: pointer;">
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>TYPE</th>
+                <th class="amount">AMOUNT</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Total Active Leases</td>
+                <td class="amount">{{ active_leases }}</td>
+            </tr>
+            <tr>
+                <td>Total Leases (All Statuses)</td>
+                <td class="amount">{{ total_leases }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="section-container">
+    <div class="section-header">INFORMATION UPDATE</div>
+    <div class="info-box" style="min-height: 50px;">
+        <!-- Placeholder for updates -->
+    </div>
+</div>
+{% endblock %}

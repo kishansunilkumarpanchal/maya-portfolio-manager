@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Portfolio Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header class="top-nav">
+        <div class="nav-left">
+            <img src="{{ url_for('static', filename='img/maya_logo.jpg') }}" alt="Maya Leasing" class="logo-nav">
+            <div class="brand-title">Maya Leasing Corp.</div>
+        </div>
+        <div class="nav-center">
+            <a href="{{ url_for('dashboard') }}"
+                class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+            <a href="{{ url_for('leases') }}"
+                class="nav-link {% if request.endpoint == 'leases' %}active{% endif %}">Leases</a>
+            <a href="#" class="nav-link">Customers</a>
+            <a href="#" class="nav-link">Reports</a>
+            <a href="#" class="nav-link">Settings</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-profile">
+                <span class="user-icon">👤</span>
+                <span class="user-name">Admin User</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+
+</html>

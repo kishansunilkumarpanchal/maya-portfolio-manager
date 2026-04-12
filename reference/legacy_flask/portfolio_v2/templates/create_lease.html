@@ -1,0 +1,412 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-container" style="max-width: 1200px; margin: 0 auto;">
+    <div class="section-header" style="margin-bottom: 20px;">
+        <h2>Create New Lease</h2>
+    </div>
+
+    <form method="POST" id="createForm">
+
+        <!-- 1. Customer Selection -->
+        <div
+            style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+            <h3
+                style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                Customer
+            </h3>
+            <div class="form-group" style="position: relative;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Select Customer</label>
+                <input type="hidden" name="customer_id" id="customerId" required>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="customerSearch" placeholder="Type to search customer..." autocomplete="off"
+                        style="flex-grow: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button type="button" onclick="openCustomerModal()"
+                        style="background: var(--accent); color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer;">
+                        Add New Customer
+                    </button>
+                </div>
+                <!-- Results Dropdown -->
+                <div id="customerResults"
+                    style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                </div>
+                <p style="margin-top: 5px; font-size: 0.85em; color: var(--text-secondary);">
+                    Type to search or add a new customer.
+                </p>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+
+            <!-- Left Column: Lease & Financials -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+                <!-- Lease Details Box -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3
+                        style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        Lease Details
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Lease Number</label>
+                            <input type="text" name="lease_number" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status</label>
+                            <select name="status" class="form-control"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="ACTV" selected>Active (ACTV)</option>
+                                <option value="PEND">Pending (PEND)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Funding Date</label>
+                            <input type="date" name="funding_date"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Payment Start
+                                Date</label>
+                            <input type="date" name="payment_start_date" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Total Terms
+                                (Months)</label>
+                            <input type="number" name="total_terms" required min="1"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Interest Rate
+                                (%)</label>
+                            <input type="number" step="0.01" name="interest_rate" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Info Box -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3
+                        style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        Financial Information
+                    </h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <!-- Row 1 -->
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Capital Cost</label>
+                            <input type="number" step="0.01" name="capital_cost"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Cap Cost
+                                Adjustment</label>
+                            <input type="number" step="0.01" name="cap_cost_adjustment"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Downpayment</label>
+                            <input type="number" step="0.01" name="downpayment"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Trade Amount</label>
+                            <input type="number" step="0.01" name="trade_amount"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+
+                        <!-- Row 3 -->
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Net Cap Cost</label>
+                            <input type="number" step="0.01" name="net_cap_cost" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background-color: #f9f9f9;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Monthly
+                                Payment</label>
+                            <input type="number" step="0.01" name="monthly_payment" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+
+                        <!-- Row 4 -->
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Lessee
+                                Residual</label>
+                            <input type="number" step="0.01" name="lessee_residual"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Lessor
+                                Residual</label>
+                            <input type="number" step="0.01" name="lessor_residual"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+
+                        <!-- Row 5 -->
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Security
+                                Deposit</label>
+                            <input type="number" step="0.01" name="security_deposit"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Monthly
+                                Depreciation</label>
+                            <input type="number" step="0.01" name="monthly_depreciation"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Assets -->
+            <div
+                style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
+                <h3
+                    style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    Assets
+                    <button type="button" onclick="addAssetRow()"
+                        style="background: #e6f4ea; color: #1e7e34; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8em; cursor: pointer;">
+                        + Add Asset
+                    </button>
+                </h3>
+
+                <div style="overflow-y: auto; max-height: 600px; flex-grow: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                            <tr style="text-align: left; border-bottom: 2px solid #eee;">
+                                <th style="padding: 8px;">Year</th>
+                                <th style="padding: 8px;">Make/Model</th>
+                                <th style="padding: 8px;">VIN/Serial</th>
+                                <th style="padding: 8px; width: 100px;">Cost</th>
+                                <th style="padding: 8px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="assetBody">
+                            <!-- Needs at least one row by default -->
+                            <tr>
+                                <td style="padding: 5px;">
+                                    <input type="number" name="asset_year[]" placeholder="YYYY" required
+                                        style="padding: 4px; border: 1px solid #ddd; width: 60px;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" name="asset_make[]" required
+                                        style="padding: 4px; border: 1px solid #ddd; width: 100%;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="text" name="asset_vin[]" required
+                                        style="padding: 4px; border: 1px solid #ddd; width: 100%;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" step="0.01" name="asset_cost[]" required
+                                        style="padding: 4px; border: 1px solid #ddd; width: 100px;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <button type="button" onclick="removeRow(this)"
+                                        style="color: #c62828; background: none; border: none; cursor: pointer;">&times;</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.85em; color: var(--text-secondary);">
+                    * At least one asset is required.
+                </p>
+            </div>
+
+        </div>
+
+        <div
+            style="position: sticky; bottom: 0; background: white; padding: 15px; border-top: 1px solid #eee; display: flex; gap: 1rem; justify-content: flex-end; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
+            <a href="{{ url_for('dashboard') }}" class="btn"
+                style="background: var(--bg-secondary); color: var(--text-main); padding: 10px 30px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none;">Cancel</a>
+            <button type="submit" class="btn"
+                style="background: var(--accent); color: white; padding: 10px 30px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                Create Lease
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<!-- Customer Modal -->
+<div id="customerModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 20px; border-radius: 8px; width: 400px; max-width: 90%;">
+        <h3 style="margin-top: 0; margin-bottom: 15px;">Add New Customer</h3>
+        <div class="form-group" style="margin-bottom: 10px;">
+            <label style="display:block; margin-bottom:5px; font-weight:500;">Customer Code *</label>
+            <input type="text" id="newCode"
+                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+            <label style="display:block; margin-bottom:5px; font-weight:500;">Company Name</label>
+            <input type="text" id="newCompany"
+                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:500;">First Name</label>
+                <input type="text" id="newFirst"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div>
+                <label style="display:block; margin-bottom:5px; font-weight:500;">Last Name</label>
+                <input type="text" id="newLast"
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" onclick="closeCustomerModal()"
+                style="padding: 8px 15px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+            <button type="button" onclick="saveNewCustomer()"
+                style="padding: 8px 15px; border: none; background: #007bff; color: white; border-radius: 4px; cursor: pointer;">Save
+                Customer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Asset Management
+    function addAssetRow() {
+        const tbody = document.getElementById('assetBody');
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td style="padding: 5px;">
+                <input type="number" name="asset_year[]" placeholder="YYYY" style="padding: 4px; border: 1px solid #ddd; width: 60px;">
+            </td>
+            <td style="padding: 5px;">
+                <input type="text" name="asset_make[]" style="padding: 4px; border: 1px solid #ddd; width: 100%;">
+            </td>
+             <td style="padding: 5px;">
+                <input type="text" name="asset_vin[]" style="padding: 4px; border: 1px solid #ddd; width: 100%;">
+            </td>
+            <td style="padding: 5px;">
+                <input type="number" step="0.01" name="asset_cost[]" style="padding: 4px; border: 1px solid #ddd; width: 100px;">
+            </td>
+            <td style="padding: 5px;">
+                <button type="button" onclick="removeRow(this)" style="color: #c62828; background: none; border: none; cursor: pointer;">&times;</button>
+            </td>
+        `;
+        tbody.appendChild(newRow);
+    }
+
+    function removeRow(btn) {
+        const tbody = document.getElementById('assetBody');
+        if (tbody.getElementsByTagName('tr').length > 1) {
+            const row = btn.closest('tr');
+            row.remove();
+        } else {
+            alert("At least one asset is required.");
+        }
+    }
+
+    // Customer Search Logic
+    const searchInput = document.getElementById('customerSearch');
+    const resultsDiv = document.getElementById('customerResults');
+    const hiddenInput = document.getElementById('customerId');
+    let dobounceTimer;
+
+    searchInput.addEventListener('input', function () {
+        clearTimeout(dobounceTimer);
+        const query = this.value;
+
+        if (query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+
+        dobounceTimer = setTimeout(() => {
+            fetch(`/api/customer-search?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    resultsDiv.innerHTML = '';
+                    if (data.length > 0) {
+                        resultsDiv.style.display = 'block';
+                        data.forEach(item => {
+                            const div = document.createElement('div');
+                            div.style.padding = '8px';
+                            div.style.cursor = 'pointer';
+                            div.style.borderBottom = '1px solid #eee';
+                            div.innerText = item.text;
+                            div.onmouseover = () => div.style.background = '#f9f9f9';
+                            div.onmouseout = () => div.style.background = 'white';
+                            div.onclick = () => selectCustomer(item);
+                            resultsDiv.appendChild(div);
+                        });
+                    } else {
+                        resultsDiv.style.display = 'none';
+                    }
+                });
+        }, 300);
+    });
+
+    function selectCustomer(item) {
+        searchInput.value = item.text;
+        hiddenInput.value = item.id;
+        resultsDiv.style.display = 'none';
+    }
+
+    // Close results when clicking outside
+    document.addEventListener('click', function (e) {
+        if (e.target !== searchInput && e.target !== resultsDiv) {
+            resultsDiv.style.display = 'none';
+        }
+    });
+
+    // Customer Modal Logic
+    const modal = document.getElementById('customerModal');
+
+    function openCustomerModal() {
+        modal.style.display = 'flex';
+        document.getElementById('newCode').focus();
+    }
+
+    function closeCustomerModal() {
+        modal.style.display = 'none';
+        // Clear fields?
+        document.getElementById('newCode').value = '';
+        document.getElementById('newCompany').value = '';
+        document.getElementById('newFirst').value = '';
+        document.getElementById('newLast').value = '';
+    }
+
+    function saveNewCustomer() {
+        const data = {
+            customer_code: document.getElementById('newCode').value,
+            company_name: document.getElementById('newCompany').value,
+            first_name: document.getElementById('newFirst').value,
+            last_name: document.getElementById('newLast').value
+        };
+
+        if (!data.customer_code) {
+            alert('Customer Code is required');
+            return;
+        }
+
+        fetch('/api/customer/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                if (result.error) {
+                    alert(result.error);
+                } else {
+                    // Success
+                    selectCustomer(result);
+                    closeCustomerModal();
+                }
+            })
+            .catch(err => alert('Error creating customer'));
+    }
+</script>
+{% endblock %}

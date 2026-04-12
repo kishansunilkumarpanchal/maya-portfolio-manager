@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-container">
+    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Leases</h2>
+        <div class="actions">
+            <a href="{{ url_for('create_lease') }}" class="btn"
+                style="background: var(--accent); color: white; padding: 5px 15px; border-radius: 4px; text-decoration: none; font-weight: 500;">
+                New Lease
+            </a>
+        </div>
+    </div>
+    <form action="{{ url_for('leases') }}" method="get" style="display: flex; gap: 10px; align-items: center;">
+        <select name="status" class="search-input"
+            style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; height: 32px;">
+            <option value="All" {% if status=='All' %}selected{% endif %}>All Statuses</option>
+            <option value="ACTV" {% if status=='ACTV' %}selected{% endif %}>Active</option>
+            <option value="SOLD" {% if status=='SOLD' %}selected{% endif %}>Sold</option>
+            <option value="CANC" {% if status=='CANC' %}selected{% endif %}>Cancelled</option>
+            <option value="STCK" {% if status=='STCK' %}selected{% endif %}>Stock</option>
+        </select>
+        <input type="text" name="search" class="search-input" placeholder="Search lease # or customer..."
+            value="{{ search or '' }}" list="customer-matches" id="search-box" autocomplete="off"
+            style="padding: 5px; border: 1px solid #ddd; border-radius: 4px; height: 32px;">
+        <datalist id="customer-matches"></datalist>
+        <button type="submit" class="btn" style="padding: 5px 10px; height: 32px;">Search</button>
+
+        <script>
+            const searchBox = document.getElementById('search-box');
+            const dataList = document.getElementById('customer-matches');
+
+            searchBox.addEventListener('input', function () {
+                const value = this.value;
+                if (value.length < 2) return;
+
+                fetch(`/api/customer-search?q=${encodeURIComponent(value)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        dataList.innerHTML = '';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item;
+                            dataList.appendChild(option);
+                        });
+                    });
+            });
+        </script>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Lease #</th>
+                <th>Customer</th>
+                <th>Start Date</th>
+                <th>Term</th>
+                <th>Rate</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lease in leases %}
+            <tr>
+                <td><a href="{{ url_for('lease_detail', id=lease.id) }}"
+                        style="color: var(--accent); font-weight: 500;">{{ lease.lease_number }}</a></td>
+                <td>{{ lease.customer.company_name or lease.customer.last_name }}</td>
+                <td>{{ lease.payment_start_date }}</td>
+                <td>{{ lease.total_terms }}</td>
+                <td>{{ lease.interest_rate }}%</td>
+                <td>
+                    <span class="badge badge-{{ 'success' if lease.status == 'ACTV' else 'warning' }}"
+                        style="padding: 4px 8px; border-radius: 4px; font-size: 0.85em; background-color: {{ '#e6f4ea' if lease.status == 'ACTV' else '#fff3e0' }}; color: {{ '#1e7e34' if lease.status == 'ACTV' else '#e65100' }};">
+                        {{ lease.status }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{{ url_for('lease_detail', id=lease.id) }}" style="color: var(--accent);">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+<div class="pagination"
+    style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1rem; align-items: center;">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('leases', page=pagination.prev_num, search=search, status=status) }}" class="btn"
+        style="padding: 5px 15px; background: var(--bg-secondary); border: 1px solid #ddd; border-radius: 4px; color: var(--text-main); text-decoration: none;">Previous</a>
+    {% endif %}
+    <span style="font-weight: 500; color: var(--text-secondary);">Page {{ pagination.page }} of {{ pagination.pages
+        }}</span>
+    {% if pagination.has_next %}
+    <a href="{{ url_for('leases', page=pagination.next_num, search=search, status=status) }}" class="btn"
+        style="padding: 5px 15px; background: var(--bg-secondary); border: 1px solid #ddd; border-radius: 4px; color: var(--text-main); text-decoration: none;">Next</a>
+    {% endif %}
+</div>
+</div>
+{% endblock %}

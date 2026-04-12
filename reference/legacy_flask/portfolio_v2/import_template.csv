@@ -1,0 +1,4 @@
+Lease Number,Status,Payment Start Date,Total Terms,Interest Rate,Customer Code,Company Name,First Name,Last Name,Net Cap Cost,Monthly Payment,Lessee Residual,Security Deposit,Asset Year,Asset Make,Asset VIN,Asset Cost
+L-NEW-100,ACTV,1/1/2025,48,5.5,C-100,Acme Corp,,,50000,1200,5000,0,2024,Toyota Camry,VIN-NEW-111,50000
+L-EXISTING-200,ACTV,6/1/2024,36,6,C-200,Beta Industries,,,30000,900,2000,0,2022,Ford F150,VIN-MOD-222,30000
+L-UNCHANGED-300,ACTV,1/1/2023,60,4.5,C-300,,John,Doe,100000,2000,10000,500,2023,Tesla Model 3,VIN-SAME-333,100000

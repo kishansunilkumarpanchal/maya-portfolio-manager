@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-container" style="max-width: 800px; margin: 0 auto;">
+    <div class="section-header" style="margin-bottom: 20px;">
+        <h2>Edit Asset {{ asset.asset_id }}</h2>
+        <div style="font-size: 0.9em; color: var(--text-muted); margin-top: 5px;">
+            Linked to Lease: <a href="{{ url_for('lease_detail', id=asset.lease_id) }}">{{ asset.lease.lease_number
+                }}</a>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Year</label>
+                    <input type="number" name="year" value="{{ asset.year }}"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Make / Model</label>
+                    <input type="text" name="make_model" value="{{ asset.make_model }}"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">VIN / Serial Number</label>
+                    <input type="text" name="vin_serial" value="{{ asset.vin_serial }}"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Equipment Cost</label>
+                    <div style="position: relative;">
+                        <input type="number" step="0.01" name="equipment_cost" value="{{ asset.equipment_cost }}"
+                            style="width: 100%; padding: 10px 10px 10px 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">Status</label>
+                    <select name="status"
+                        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="ACTV" {% if asset.status=='ACTV' %}selected{% endif %}>Active</option>
+                        <option value="SOLD" {% if asset.status=='SOLD' %}selected{% endif %}>Sold</option>
+                        <option value="STCK" {% if asset.status=='STCK' %}selected{% endif %}>Stock</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 15px; margin-top: 25px;">
+            <a href="{{ url_for('lease_detail', id=asset.lease_id) }}" class="btn"
+                style="background: var(--bg-secondary); color: var(--text-main); padding: 10px 25px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none;">
+                Cancel
+            </a>
+            <button type="submit" class="btn"
+                style="background: var(--accent); color: white; padding: 10px 30px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

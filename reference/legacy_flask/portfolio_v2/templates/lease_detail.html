@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-container">
+    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>{{ lease.lease_number }}</h2>
+        <div class="actions">
+            <a href="{{ url_for('leases') }}" class="btn"
+                style="background: var(--bg-secondary); border: 1px solid #ddd; color: var(--text-main);">Back to
+                List</a>
+            <a href="{{ url_for('edit_lease', id=lease.id) }}" class="btn"
+                style="background: var(--accent); color: white; border: none; text-decoration: none; padding: 5px 15px;">Edit</a>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+        <!-- Customer Info Box -->
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+            <h3
+                style="margin-top: 0; margin-bottom: 1rem; color: var(--accent); font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">
+                Customer Information</h3>
+            <div style="font-weight: 600; font-size: 1.1em; margin-bottom: 0.5rem;">
+                {{ lease.customer.company_name or lease.customer.first_name + ' ' + lease.customer.last_name }}
+            </div>
+            <div style="color: var(--text-secondary); line-height: 1.5;">
+                {{ lease.customer.address1 }}<br>
+                {% if lease.customer.address2 %}{{ lease.customer.address2 }}<br>{% endif %}
+                {{ lease.customer.city }}, {{ lease.customer.province_code }} {{ lease.customer.postal_code }}
+            </div>
+            <div style="margin-top: 1rem; font-size: 0.9em; color: var(--text-secondary);">
+                <strong>Customer Code:</strong> {{ lease.customer.customer_code }}
+            </div>
+        </div>
+
+        <!-- Lease Info Box -->
+        <div style="background: var(--bg-secondary); padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+            <h3
+                style="margin-top: 0; margin-bottom: 1rem; color: var(--accent); font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">
+                Lease Details</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Status</div>
+                    <span class="badge badge-{{ 'success' if lease.status == 'ACTV' else 'warning' }}"
+                        style="padding: 2px 6px; border-radius: 4px; font-size: 0.85em; background-color: {{ '#e6f4ea' if lease.status == 'ACTV' else '#fff3e0' }}; color: {{ '#1e7e34' if lease.status == 'ACTV' else '#e65100' }};">
+                        {{ lease.status }}
+                    </span>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Funding Date</div>
+                    <div style="font-weight: 500;">{{ lease.funding_date }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Start Date</div>
+                    <div style="font-weight: 500;">{{ lease.payment_start_date }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Term</div>
+                    <div style="font-weight: 500;">{{ lease.total_terms }} months</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Interest Rate</div>
+                    <div style="font-weight: 500;">{{ lease.interest_rate }}%</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Last Payment Date</div>
+                    <div style="font-weight: 500;">{{ lease.last_payment_date }}</div>
+                </div>
+                {% if lease.financial_info %}
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Net Cap Cost</div>
+                    <div style="font-weight: 500;">${{ "{:,.2f}".format(lease.financial_info.net_cap_cost) }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Monthly Payment</div>
+                    <div style="font-weight: 500;">${{ "{:,.2f}".format(lease.financial_info.monthly_payment) }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Residual</div>
+                    <div style="font-weight: 500;">${{ "{:,.2f}".format(lease.financial_info.lessee_residual) }}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.85em; color: var(--text-secondary);">Security Deposit</div>
+                    <div style="font-weight: 500;">${{ "{:,.2f}".format(lease.financial_info.security_deposit) }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Box -->
+    <div
+        style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 2rem; border: 1px solid var(--border-color);">
+        <h3
+            style="margin-top: 0; color: var(--text-main); margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+            Lease Metrics</h3>
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 0.85em; color: var(--text-secondary); margin-bottom: 5px;">IRR</div>
+                <div style="font-weight: 600; font-size: 1.2rem; color: var(--accent);">{{ "{:,.2f}".format(metric_irr)
+                    }}%</div>
+            </div>
+            <div style="text-align: center; border-left: 1px solid #eee;">
+                <div style="font-size: 0.85em; color: var(--text-secondary); margin-bottom: 5px;">NPV</div>
+                <div style="font-weight: 600; font-size: 1.2rem; color: var(--text-main);">${{
+                    "{:,.2f}".format(metric_npv) }}</div>
+            </div>
+            <div style="text-align: center; border-left: 1px solid #eee;">
+                <div style="font-size: 0.85em; color: var(--text-secondary); margin-bottom: 5px;">Remaining Term</div>
+                <div style="font-weight: 600; font-size: 1.2rem; color: var(--text-main);">{{ metric_rem_term }}</div>
+            </div>
+            <div style="text-align: center; border-left: 1px solid #eee;">
+                <div style="font-size: 0.85em; color: var(--text-secondary); margin-bottom: 5px;">Remaining Total</div>
+                <div style="font-weight: 600; font-size: 1.2rem; color: var(--text-main);">${{
+                    "{:,.2f}".format(metric_rem_total) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assets Section -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="color: var(--text-main); margin-bottom: 1rem; font-size: 1.2rem;">Assets</h3>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Asset ID</th>
+                        <th>Year</th>
+                        <th>Make/Model</th>
+                        <th>VIN/Serial</th>
+                        <th>Cost</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in lease.assets %}
+                    <tr>
+                        <td>{{ asset.asset_id }}</td>
+                        <td>{{ asset.year }}</td>
+                        <td>{{ asset.make_model }}</td>
+                        <td>{{ asset.vin_serial }}</td>
+                        <td class="text-middle">${{ "{:,.2f}".format(asset.equipment_cost) }}</td>
+                        <td>
+                            <a href="{{ url_for('asset_detail', id=asset.id) }}"
+                                style="color: var(--accent); text-decoration: none; font-weight: 500; border: 1px solid var(--accent); padding: 5px 10px; border-radius: 4px;">
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No assets linked.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Payment Schedule Section -->
+    <div>
+        <h3 style="color: var(--text-main); margin-bottom: 1rem; font-size: 1.2rem;">Future Payment Schedule</h3>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Period</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in future_payments %}
+                    <tr>
+                        <td>{{ payment.period_number }}</td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td>${{ "{:,.2f}".format(payment.amount) }}</td>
+                        <td>{{ payment.type }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">No future payments scheduled.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

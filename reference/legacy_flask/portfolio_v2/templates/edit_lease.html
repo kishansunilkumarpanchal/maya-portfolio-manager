@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-container" style="max_width: 1200px; margin: 0 auto;">
+    <div class="section-header" style="margin-bottom: 20px;">
+        <h2>Edit Lease {{ lease.lease_number }}</h2>
+    </div>
+
+    <form method="POST" id="editForm">
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+
+            <!-- Left Column: Lease & Financials -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Lease Details Box -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3
+                        style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        Lease Details</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Status</label>
+                            <select name="status" class="form-control"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <option value="ACTV" {% if lease.status=='ACTV' %}selected{% endif %}>Active (ACTV)
+                                </option>
+                                <option value="SOLD" {% if lease.status=='SOLD' %}selected{% endif %}>Sold (SOLD)
+                                </option>
+                                <option value="CANC" {% if lease.status=='CANC' %}selected{% endif %}>Cancelled (CANC)
+                                </option>
+                                <option value="STCK" {% if lease.status=='STCK' %}selected{% endif %}>Stock (STCK)
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Funding Date</label>
+                            <input type="date" name="funding_date" value="{{ lease.funding_date }}"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Payment Start
+                                Date</label>
+                            <input type="date" name="payment_start_date" value="{{ lease.payment_start_date }}" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Total Terms</label>
+                            <input type="number" name="total_terms" value="{{ lease.total_terms }}" required
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Interest Rate
+                                (%)</label>
+                            <input type="number" step="0.01" name="interest_rate" value="{{ lease.interest_rate }}"
+                                required style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Info Box -->
+                <div
+                    style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <h3
+                        style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
+                        Financial Information</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Net Cap Cost</label>
+                            <input type="number" step="0.01" name="net_cap_cost"
+                                value="{{ lease.financial_info.net_cap_cost if lease.financial_info else '' }}"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Monthly
+                                Payment</label>
+                            <input type="number" step="0.01" name="monthly_payment"
+                                value="{{ lease.financial_info.monthly_payment if lease.financial_info else '' }}"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Residual
+                                Value</label>
+                            <input type="number" step="0.01" name="lessee_residual"
+                                value="{{ lease.financial_info.lessee_residual if lease.financial_info else '' }}"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Purchase
+                                Option</label>
+                            <input type="number" step="0.01" name="purchase_option"
+                                value="{{ lease.financial_info.purchase_option if lease.financial_info else '' }}"
+                                style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Payment Schedule -->
+            <div
+                style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
+                <h3
+                    style="margin-top: 0; color: var(--text-main); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    Payment Schedule
+                    <button type="button" onclick="addPaymentRow()"
+                        style="background: #e6f4ea; color: #1e7e34; border: none; padding: 5px 10px; border-radius: 4px; font-size: 0.8em; cursor: pointer;">+
+                        Add Payment</button>
+                </h3>
+
+                <div style="overflow-y: auto; max-height: 500px; flex-grow: 1;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead style="position: sticky; top: 0; background: white; z-index: 1;">
+                            <tr style="text-align: left; border-bottom: 2px solid #eee;">
+                                <th style="padding: 8px;">#</th>
+                                <th style="padding: 8px;">Date</th>
+                                <th style="padding: 8px;">Amount</th>
+                                <th style="padding: 8px;">Type</th>
+                                <th style="padding: 8px;"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduleBody">
+                            {% for payment in schedule %}
+                            <tr>
+                                <td style="padding: 8px;">{{ loop.index }}</td>
+                                <td style="padding: 5px;">
+                                    <input type="date" name="sched_date[]" value="{{ payment.payment_date }}"
+                                        style="padding: 4px; border: 1px solid #ddd; width: 125px;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <input type="number" step="0.01" name="sched_amount[]" value="{{ payment.amount }}"
+                                        style="padding: 4px; border: 1px solid #ddd; width: 80px;">
+                                </td>
+                                <td style="padding: 5px;">
+                                    <select name="sched_type[]" style="padding: 4px; border: 1px solid #ddd;">
+                                        <option value="Rent" {% if payment.type=='Rent' %}selected{% endif %}>Rent
+                                        </option>
+                                        <option value="Residual" {% if payment.type=='Residual' %}selected{% endif %}>
+                                            Residual</option>
+                                        <option value="Fee" {% if payment.type=='Fee' %}selected{% endif %}>Fee</option>
+                                    </select>
+                                </td>
+                                <td style="padding: 5px;">
+                                    <button type="button" onclick="removeRow(this)"
+                                        style="color: #c62828; background: none; border: none; cursor: pointer;">&times;</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div
+            style="position: sticky; bottom: 0; background: white; padding: 15px; border-top: 1px solid #eee; display: flex; gap: 1rem; justify-content: flex-end; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);">
+            <a href="{{ url_for('lease_detail', id=lease.id) }}" class="btn"
+                style="background: var(--bg-secondary); color: var(--text-main); padding: 10px 30px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none;">Cancel</a>
+            <button type="submit" class="btn"
+                style="background: var(--accent); color: white; padding: 10px 30px; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Save
+                All Changes</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    function addPaymentRow() {
+        const tbody = document.getElementById('scheduleBody');
+        const rows = tbody.getElementsByTagName('tr');
+        let lastDate = new Date();
+        let lastAmount = 0;
+        let lastType = 'Rent';
+
+        if (rows.length > 0) {
+            const lastRow = rows[rows.length - 1];
+            const dateInput = lastRow.querySelector('input[name="sched_date[]"]');
+            const amountInput = lastRow.querySelector('input[name="sched_amount[]"]');
+
+            if (dateInput.value) {
+                lastDate = new Date(dateInput.value);
+                lastDate.setMonth(lastDate.getMonth() + 1); // Add 1 month
+            }
+            if (amountInput.value) {
+                lastAmount = amountInput.value;
+            }
+        }
+
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td style="padding: 8px;">${rows.length + 1}</td>
+            <td style="padding: 5px;">
+                <input type="date" name="sched_date[]" value="${lastDate.toISOString().split('T')[0]}" style="padding: 4px; border: 1px solid #ddd; width: 125px;">
+            </td>
+            <td style="padding: 5px;">
+                <input type="number" step="0.01" name="sched_amount[]" value="${lastAmount}" style="padding: 4px; border: 1px solid #ddd; width: 80px;">
+            </td>
+            <td style="padding: 5px;">
+                <select name="sched_type[]" style="padding: 4px; border: 1px solid #ddd;">
+                    <option value="Rent" selected>Rent</option>
+                    <option value="Residual">Residual</option>
+                    <option value="Fee">Fee</option>
+                </select>
+            </td>
+            <td style="padding: 5px;">
+                <button type="button" onclick="removeRow(this)" style="color: #c62828; background: none; border: none; cursor: pointer;">&times;</button>
+            </td>
+        `;
+        tbody.appendChild(newRow);
+    }
+
+    function removeRow(btn) {
+        const row = btn.closest('tr');
+        row.remove();
+        // Re-index? Optional, but visual only.
+        const tbody = document.getElementById('scheduleBody');
+        const rows = tbody.getElementsByTagName('tr');
+        for (let i = 0; i < rows.length; i++) {
+            rows[i].cells[0].innerText = i + 1;
+        }
+    }
+</script>
+{% endblock %}
